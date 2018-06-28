@@ -50,7 +50,7 @@ describe('POST /todos', () => {
 			.send({})
 			.expect((res) => {
 				expect(res.body.errors.text.name)
-					.toBe("ValidatorError")
+					.toBe('ValidatorError')
 			})
 			.end((err, res) => {
 				if (err) {
@@ -112,12 +112,40 @@ describe('GET /todos', () => {
 	});
 });
 
-describe('POST /delete/:id', () => {
+describe('DELETE /delete/:id', () => {
 	it('should delete by obj id', (done) => {
+		var deleteId = todos[0]._id.toHexString();
+
 		request(app)
-			.post('/delete/')
-			.send({id: todos[0]._id.toHexString()})
+			.delete(`/todos/${deleteId}`)
 			.expect(200)
-			.expect()
+			.expect((res) => {
+				expect(res.body.todo._id == todos[0]._id.toHexString());
+			})
+			.end(done);
+	});
+
+	it('should return not valid id', (done) => {
+		var deleteId = '123';
+
+		request(app)
+			.delete(`/todos/${deleteId}`)
+			.expect(404)
+			.expect((res) => {
+				expect(res.body.error == 'That id is invalid!');
+			})
+			.end(done);
+	});
+
+	it('should return error message for now result', (done) => {
+		var deleteId = '5b34f0af0bd065348c00b631';
+
+		request(app)
+			.delete(`/todos/${deleteId}`)
+			.expect(404)
+			.expect((res) => {
+				expect(res.body.error == 'That id is not in the collection!');
+			})
+			.end(done);
 	});
 });
