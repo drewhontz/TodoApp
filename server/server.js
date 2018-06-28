@@ -47,11 +47,11 @@ app.get('/todos/:id', (req, res) => {
 	}).catch((e) => res.status(404).send());
 });
 
-app.post('/delete/:id', (req, res) => {
+app.get('/delete/:id', (req, res) => {
 	var id = req.params.id;
 
 	if (!ObjectID.isValid(id)) {
-		return res.status(404).send();
+		return res.status(404).send({error: "That id is invalid!"});
 	}
 
 	Todo.findOneAndDelete({_id: id}).then((doc) => {
