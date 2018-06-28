@@ -111,3 +111,13 @@ describe('GET /todos', () => {
 			.end(done);
 	});
 });
+
+describe('POST /delete/:id', () => {
+	it('should delete by obj id', (done) => {
+		request(app)
+			.post('/delete/')
+			.send({id: todos[0]._id.toHexString()})
+			.expect(200)
+			.expect()
+	});
+});
