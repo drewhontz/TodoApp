@@ -132,7 +132,7 @@ describe('DELETE /delete/:id', () => {
 			.delete(`/todos/${deleteId}`)
 			.expect(404)
 			.expect((res) => {
-				expect(res.body.error == 'That id is invalid!');
+				expect(res.body.error).toBe('That id is invalid!');
 			})
 			.end(done);
 	});
@@ -144,7 +144,41 @@ describe('DELETE /delete/:id', () => {
 			.delete(`/todos/${deleteId}`)
 			.expect(404)
 			.expect((res) => {
-				expect(res.body.error == 'That id is not in the collection!');
+				expect(res.body.error).toBe('That id is not in the collection!');
+			})
+			.end(done);
+	});
+});
+
+describe('PATH /todo:id', () => {
+	it('should update the todo', (done) => {
+		var id = todos[0]._id.toHexString();
+		var text = 'Lady bird';
+
+		request(app)
+			.patch(`/todos/${id}`)
+			.send({text: text, completed: true})
+			.expect(200)
+			.expect((res) => {
+				expect(res.body.todo.text).toBe(text);
+				expect(res.body.todo.completed).toBe(true);
+				expect(typeof res.body.todo.completedAt).toBe('number');
+			})
+			.end(done);
+	});
+
+	it('should not update the todo', (done) => {
+		var id = todos[0]._id.toHexString();
+		var text = 'The shape of water';
+
+		request(app)
+			.patch(`/todos/${id}`)
+			.send({text: text, completed: false})
+			.expect(200)
+			.expect((res) => {
+				expect(res.body.todo.text).toBe(text);
+				expect(res.body.todo.completed).toBe(false);
+				expect(res.body.todo.completedAt).toBeNull();
 			})
 			.end(done);
 	});
